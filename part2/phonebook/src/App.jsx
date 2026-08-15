@@ -1,20 +1,16 @@
 import { useState } from "react";
 
+const Filter = ({ filter, handleFilterChange }) => {
+  return (
+    <div>
+      filter show with <input value={filter} onChange={handleFilterChange} />
+    </div>
+  );
+};
 
-const Filter = () => {
-  
-}
-
-const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
+const PersonForm = ({ persons, setPersons }) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
-  const [filter, setFilter] = useState("");
 
   const addName = (e) => {
     e.preventDefault();
@@ -33,15 +29,49 @@ const App = () => {
     setNewNumber("");
   };
 
-  const handleNameOnchange = (e) => {
-    setNewName(e.target.value);
-  };
+  return (
+    <form onSubmit={addName}>
+      <div>
+        name:{" "}
+        <input value={newName} onChange={(e) => setNewName(e.target.value)} />
+        <div>
+          number:{" "}
+          <input
+            value={newNumber}
+            onChange={(e) => setNewNumber(e.target.value)}
+          />
+        </div>
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
+};
 
-  const handleNumberOnchange = (e) => {
-    setNewNumber(e.target.value);
-  };
+const Persons = ({ persons }) => {
+  return (
+    <div>
+      {persons.map((p) => (
+        <p key={p.name}>
+          {p.name} {p.number}
+        </p>
+      ))}
+    </div>
+  );
+};
 
-  const handleFilterOnchange = (e) => {
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: "Arto Hellas", number: "040-123456", id: 1 },
+    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
+    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
+  ]);
+
+  const [filter, setFilter] = useState("");
+
+  const handleFilterChange = (e) => {
     setFilter(e.target.value);
   };
 
@@ -55,34 +85,11 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter show with{" "}
-        <input value={filter} onChange={handleFilterOnchange} />
-      </div>
-      <h2>Numbers</h2>
-        {personToShow.map((p) => (
-          <p>
-            {p.name} {p.number}
-          </p>
-        ))}
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameOnchange} />
-          <div>
-            number: <input value={newNumber} onChange={handleNumberOnchange} />
-          </div>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm persons={persons} setPersons={setPersons} />
       <h2>Numbers</h2>
-      {persons.map((p) => (
-        <p key={p.name}>
-          {p.name} {p.number}
-        </p>
-      ))}
+      <Persons persons={personToShow} />
     </div>
   );
 };
