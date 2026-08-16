@@ -17,6 +17,7 @@ const PersonForm = ({ persons, setPersons }) => {
     const newObject = {
       name: newName,
       number: newNumber,
+      id: persons.length > 0 ? Math.max(...persons.map((p) => p.id)) + 1 : 1,
     };
 
     const exitsName = persons.some((p) => p.name === newName);
