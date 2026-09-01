@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 const api_key = import.meta.env.VITE_SOME_KEY;
 const baseUrl = "https://studies.cs.helsinki.fi/restcountries/api/all";
 
-const Show = ({ country }) => {
+const CountryDetails = ({ country }) => {
   const [weather, setWeather] = useState(null);
   const capital = country.capital?.[0];
 
@@ -13,113 +13,111 @@ const Show = ({ country }) => {
 
     axios
       .get(
-        `https://api.openweathermap.org/data/2.5/weather?q=${capital[0]}&appid=${api_key}`,
+        `https://api.openweathermap.org/data/2.5/weather?q=${capital}&appid=${api_key}&units=metric`,
       )
-      .then((response) => {
-        setWeather(response.data);
-      })
-      .catch((error) => console.log(error));
+      .then((response) => setWeather(response.data))
+      .catch((err) => console.error("Failed to fetch weather data", err));
   }, [capital]);
 
   return (
-    <div id={country.area}>
+    <div>
       <h1>{country.name.common}</h1>
-      <p>
-        Capital:{" "}
-        {country.capital.length === 1
-          ? country.capital
-          : country.capital.map((ca) => <p>{ca}</p>)}
-      </p>
+      <p>Capital: {country.capital ? country.capital.join(", ") : "N/A"}</p>
       <p>Area: {country.area}</p>
-      <h1>Languages:</h1>
+
+      <h2>Languages:</h2>
       <ul>
-        {Object.entries(country.languages).map(([key, value]) => (
-          <li id={key}>{value}</li>
-        ))}
+        {country.languages &&
+          Object.entries(country.languages).map(([code, name]) => (
+            <li key={code}>{name}</li>
+          ))}
       </ul>
+
       <div>
-        <img src={`${country.flags.png}`} alt={`${country.flags.alt}`} />
+        <img
+          src={country.flags.png}
+          alt={country.flags.alt || `Flag of ${country.name.common}`}
+          width="150"
+        />
       </div>
-      <h1>Weather in {country.capital[0]}</h1>
-      {weather !== null ? (
-        <div>
-          <p>Temperature {(weather.main.temp - 273.15).toFixed(2)} Celsius</p>
-          <img
-            src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`}
-            alt={weather.weather[0].description}
-          />
-          <p>Wind {weather.wind.speed} m/s</p>
-        </div>
-      ) : (
-        ""
+
+      {capital && (
+        <>
+          <h2>Weather in {capital}</h2>
+          {weather ? (
+            <div>
+              <p>Temperature {weather.main.temp.toFixed(1)} Celsius</p>
+              <img
+                src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`}
+                alt={weather.weather[0].description}
+              />
+              <p>Wind {weather.wind.speed} m/s</p>
+            </div>
+          ) : (
+            <p>Loading weather...</p>
+          )}
+        </>
       )}
+    </div>
+  );
+};
+
+const CountryList = ({ countries, handleShow }) => {
+  if (countries.length > 10) {
+    return <p>Too many matches, specify another filter.</p>;
+  }
+
+  if (countries.length === 1) {
+    return <CountryDetails country={countries[0]} />;
+  }
+
+  return (
+    <div>
+      {countries.map((country) => (
+        <div key={country.cca3 || country.name.common}>
+          {country.name.common} <button onClick={() => handleShow(country)}>Show</button>
+        </div>
+      ))}
     </div>
   );
 };
 
 function App() {
   const [search, setSearch] = useState("");
-  const [countries, setCountries] = useState(null);
-  const [showDetails, setShowDetails] = useState({ show: false, c: null });
+  const [countries, setCountries] = useState([]);
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
-  //console.log(search);
-
-  const handleOnchange = (e) => {
-    setSearch(e.target.value);
-  };
   useEffect(() => {
-    axios.get(baseUrl).then((response) => {
-      setCountries(response.data);
-    });
+    axios
+      .get(baseUrl)
+      .then((response) => setCountries(response.data))
+      .catch((err) => console.error("Error fetching countries", err));
   }, []);
 
-  /*if (countries !== null) {
-    countries.map((c) => console.log(c));
-  }*/
-
-  const result =
-    countries === null
-      ? ""
-      : countries.filter((c) =>
-          c.name.common.toLowerCase().includes(search.toLowerCase()),
-        );
-
-  //console.log("Result: ", result);
-
-  if (result.length !== 0) {
-    // result.map((c) => console.log(c.capital));
-  }
-
-  const handleShow = (c) => {
-    setShowDetails({
-      show: true,
-      c: c,
-    });
+  const handleSearchChange = (e) => {
+    setSearch(e.target.value);
+    setSelectedCountry(null); 
   };
+
+  const filteredCountries = search.trim()
+    ? countries.filter((country) =>
+        country.name.common.toLowerCase().includes(search.toLowerCase()),
+      )
+    : [];
 
   return (
     <div>
-      find countries:{" "}
-      <input type="text" value={search} onChange={handleOnchange} />
-      {showDetails.show ? (
-        <div>{showDetails.show && <Show c={showDetails.c} />}</div>
+      <div>
+        find countries: <input value={search} onChange={handleSearchChange} />
+      </div>
+
+      {selectedCountry ? (
+        <CountryDetails country={selectedCountry} />
       ) : (
-        <div>
-          {result.length === 0 ? (
-            ""
-          ) : result.length > 10 ? (
-            <p>Too many matches, specify another filter.</p>
-          ) : result.length !== 1 ? (
-            result.map((country) => (
-              <p id={country.area}>
-                {country.name.common}
-                <button onClick={() => handleShow(country)}>Show</button>
-              </p>
-            ))
-          ) : (
-            result.map((country) => <Show country={country} />)
-          )}
-        </div>
+        <CountryList
+          countries={filteredCountries}
+          handleShow={(country) => setSelectedCountry(country)}
+        />
       )}
     </div>
   );
