@@ -61,30 +61,27 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(204).end();
 });
 
-const generateRandomId = () => {
-  randomId = Math.floor(Date.now() * Math.random());
-  return String(randomId);
-};
-
 app.post("/api/persons", (request, response) => {
   const body = request.body;
 
   if (!body.name || !body.number) {
-    response.status(400).json({ error: "name and number are required!" });
+    return response
+      .status(400)
+      .json({ error: "name and number are required!" });
   }
 
   const exitingName = persons.some(
-    (person) => person.name.toLowerCase === body.name.toLowerCase,
+    (person) => person.name.toLowerCase() === body.name.toLowerCase(),
   );
 
   if (exitingName) {
-    response.status(400).json({ error: "name must be unique" });
+    return response.status(400).json({ error: "name or number missing" });
   }
 
   const person = {
     name: body.name,
     number: body.number,
-    id: generateRandomId(),
+    id: String(Math.floor(Date.now() * Math.random())),
   };
 
   persons = persons.concat(person);
