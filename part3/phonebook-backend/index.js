@@ -92,14 +92,14 @@ app.post("/api/persons", (request, response) => {
   const person = {
     name: body.name,
     number: body.number,
-    id: String(Math.floor(Date.now() * Math.random())),
+    id: String(Math.floor(10000000 * Math.random())),
   };
 
   persons = persons.concat(person);
   response.json(person);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
