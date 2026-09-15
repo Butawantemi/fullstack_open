@@ -104,6 +104,42 @@ test('backend responds with 400 Bad Request if url is missing', async () => {
     .expect(400)
 })
 
+test('succeeds with status code 204 if id is valid', async () => {
+  const blogAtStart = await helper.blogsInDB()
+  const blogToDelete = blogAtStart[0]
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const blogAtEnd = await helper.blogsInDB()
+  const ids = blogAtEnd.map(blog => blog.id)
+  assert(!ids.includes(blogToDelete.id))
+
+  assert.strictEqual(blogAtEnd.length, helper.initialBlogs.length - 1)
+})
+
+test('succeeds update a blog post with status code 200 if id is valid', async () => {
+  const blogsBeforeUpdate = await helper.blogsInDB()
+  const blogToUpdate = blogsBeforeUpdate[0]
+
+  const blogUpdate = {
+    title: 'Test use super test.',
+    author: blogToUpdate.author,
+    url: 'https://fullstackopen.com/en/part4',
+    likes: 100,
+  }
+  await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(blogUpdate)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsAfterUpdate = await helper.blogsInDB()
+  const updatedBlogInDb = blogsAfterUpdate.find(blog => blog.id === blogToUpdate.id)
+  assert.strictEqual(updatedBlogInDb.title, blogUpdate.title)
+  assert.strictEqual(updatedBlogInDb.likes, blogUpdate.likes)
+})
+
 after(async () => {
   mongoose.connection.close()
 })
