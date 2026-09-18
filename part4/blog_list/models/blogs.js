@@ -9,6 +9,10 @@ const blogSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   url: String,
   likes: {
     type: Number,
@@ -21,7 +25,7 @@ blogSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
-  },
+  }
 })
 
 

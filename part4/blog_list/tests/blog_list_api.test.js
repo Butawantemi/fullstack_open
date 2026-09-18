@@ -1,14 +1,17 @@
 const assert = require('node:assert')
-const { test, beforeEach, after } = require('node:test')
+const { test, beforeEach, after, describe } = require('node:test')
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt')
 const supertest = require('supertest')
 const app = require('../app')
 
 
 const Blog = require('../models/blogs')
 const helper = require('./test_helper')
+const User = require('../models/user')
 
 const api = supertest(app)
+
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -138,6 +141,87 @@ test('succeeds update a blog post with status code 200 if id is valid', async ()
   const updatedBlogInDb = blogsAfterUpdate.find(blog => blog.id === blogToUpdate.id)
   assert.strictEqual(updatedBlogInDb.title, blogUpdate.title)
   assert.strictEqual(updatedBlogInDb.likes, blogUpdate.likes)
+})
+
+//Start here.
+
+describe('Create a user', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+    await Blog.deleteMany({})
+    const passwordHash = await bcrypt.hash('secret123', 10)
+    const user = User({
+      username: 'root',
+      name: 'Super User',
+      passwordHash
+    })
+
+    await user.save()
+  })
+
+
+  test('Create a user', async () => {
+    const usersAtStart = await User.find({})
+
+    const newUser = {
+      username: 'tester',
+      name: 'Tester User',
+      password: 'Arush@2027'
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await User.find({})
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    assert(usernames.includes('tester'))
+  })
+
+  test('Dublicate username return 400 bad request', async () => {
+    await api
+      .post('/api/users')
+      .send({ username: 'root', password: 'Arusha@2027' })
+      .expect(400)
+  })
+
+  test('create a post and verify that the content of the blog post is saved correctly to the database', async () => {
+    const users = await User.find({})
+    const firstUser = users[0]
+    const blogsAtStart = await helper.blogsInDB()
+
+    const newBlog = {
+      title: 'My first blog.',
+      author: 'Japhet Paul',
+      url: 'https://fullstackopen.com',
+      user: firstUser._id,
+      likes: 60,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogAtEnd = await helper.blogsInDB()
+    assert.strictEqual(blogAtEnd.length, blogsAtStart.length + 1)
+
+    const title = blogAtEnd.map(blog => blog.title)
+    assert(title.includes('My first blog.'))
+  })
+
+  test('login a user', async () => {
+    await api
+      .post('/api/login')
+      .send({ username: 'root', password: 'secret123' })
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+
 })
 
 after(async () => {

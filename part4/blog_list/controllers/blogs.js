@@ -9,21 +9,18 @@ blogsRouter.get('/', async(request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-  const body = request.body
+  const { title, author, user, url, likes } = request.body
 
-  if (!body.title) {
-    return response.status(400).end()
-  }
-
-  if (!body.url) {
+  if (!(title || author || user || url)) {
     return response.status(400).end()
   }
 
   const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes
+    url,
+    title,
+    author,
+    user,
+    likes
   })
 
   const newBlog = await blog.save()
