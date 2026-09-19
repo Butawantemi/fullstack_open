@@ -13,7 +13,7 @@ loginRouter.post('/', async (request, response) => {
 
   const user = await User.findOne({ username })
 
-  const correctPassword = user === null ? false : bcrypt.compare(password, user.passwordHash)
+  const correctPassword = user === null ? false : await bcrypt.compare(password, user.passwordHash)
 
   if (!user || !correctPassword) {
     return response.status(401).json({ error: 'Wrong username or password!' })
@@ -21,10 +21,10 @@ loginRouter.post('/', async (request, response) => {
 
   const userForUser = {
     username: user.username,
-    id: user._d
+    id: user._id
   }
 
-  const token = jwt.sign(userForUser, process.env.SECRET)
+  const token = jwt.sign(userForUser, process.env.SECRET, { expiresIn: 60 * 60 })
   response.status(200).json({ token: token, username: user.username, name:user.name })
 })
 
