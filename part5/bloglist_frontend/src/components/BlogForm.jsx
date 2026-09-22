@@ -13,13 +13,13 @@ const BlogForm = ({
       <form onSubmit={handleSubmit}>
         <div>
           <label>
-            title:{" "}
+            title:{' '}
             <input type="text" value={title} onChange={handleTitleChange} />
           </label>
         </div>
         <div>
           <label>
-            author:{" "}
+            author:{' '}
             <input type="text" value={author} onChange={handleAuthorChange} />
           </label>
         </div>
@@ -31,7 +31,7 @@ const BlogForm = ({
         <button type="submit">create</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default BlogForm;
+export default BlogForm

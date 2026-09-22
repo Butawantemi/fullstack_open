@@ -10,7 +10,7 @@ const LoginForm = ({
       <h2>Log in to the application</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          Username:{" "}
+          Username:{' '}
           <input
             type="text"
             name="username"
@@ -19,7 +19,7 @@ const LoginForm = ({
           />
         </div>
         <div>
-          Password:{" "}
+          Password:{' '}
           <input
             type="password"
             name="password"
@@ -30,7 +30,7 @@ const LoginForm = ({
         <button type="submit">login</button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default LoginForm;
+export default LoginForm
