@@ -11,20 +11,20 @@ const Blog = ({ blog, handleUpdateLike, handleRemoveBlog, user }) => {
   }
 
   return (
-    <div style={blogStyle}>
-      <p>
-        {blog.title}
+    <div style={blogStyle} data-testid='blog'>
+      <p data-testid="firstToshow">
+        <span> {blog.title}</span>  <span>{blog.author}</span>
         <button onClick={() => setVisible(!visible)}>
           {visible ? 'hide' : 'view'}
         </button>
       </p>
-      <div style={visible ? { display: '' } : { display: 'none' }}>
+      <div style={visible ? { display: '' } : { display: 'none' }} data-testid="toggleContent">
         <a href={blog.url}>{blog.url}</a>{' '}
         <p>
           likes {blog.likes}
-          <button onClick={() => handleUpdateLike(blog)}>like</button>
+          <button onClick={() => handleUpdateLike(blog)} >like</button>
         </p>
-        {blog.author}
+        <p><strong>{user.username}</strong></p>
         {user && (
           <button
             style={{ background: 'blue', marginBottom: 5 }}

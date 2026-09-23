@@ -11,9 +11,6 @@ import Togglable from './components/Togglable'
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [user, setUser] = useState(null)
   const [blogs, setBlogs] = useState(null)
 
@@ -88,21 +85,13 @@ const App = () => {
     }
   }
 
-  const handleCreateBlog = async (event) => {
-    event.preventDefault()
+  const createBlog = async (blogObject) => {
+
     try {
-      const returnedBlog = await blogsService.createblog({
-        title,
-        author,
-        url,
-      })
+      const returnedBlog = await blogsService.createblog(blogObject)
       setBlogs(blogs.concat(returnedBlog))
 
-      notify(`A new blog "${title}" by ${author} was successfully added!`)
-
-      setTitle('')
-      setAuthor('')
-      setUrl('')
+      notify(`A new blog "${returnedBlog.title}" by ${returnedBlog.author} was successfully added!`)
     } catch (error) {
       console.error('Failed to create blog post:', error)
       notify('Failed to create blog post. Check your data inputs.', 'error')
@@ -171,13 +160,7 @@ const App = () => {
 
           <Togglable buttonLabel="create new blog">
             <BlogForm
-              handleSubmit={handleCreateBlog}
-              title={title}
-              author={author}
-              url={url}
-              handleTitleChange={({ target }) => setTitle(target.value)}
-              handleAuthorChange={({ target }) => setAuthor(target.value)}
-              handleUrlChange={({ target }) => setUrl(target.value)}
+              createBlog={createBlog}
             />
           </Togglable>
           <br />
