@@ -1,0 +1,20 @@
+{
+  // 1. Enable ESLint to fix JavaScript files automatically on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // 2. Configure JavaScript-specific settings
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "editor.formatOnSave": true
+  },
+
+  // 3. Keep Prettier as the default formatter for ALL other languages (HTML, CSS, JSON, etc.)
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}
