@@ -17,7 +17,7 @@ test('</BlogForm> ', async () => {
 
   await user.type(title, 'First Blog Post')
   await user.type(author, 'Paul Alx')
-  await user.type(url, 'https://tanzania-Kwanza.co.tz')
+  await user.type(url, 'https://tanzania-kwanza.co.tz')
   await user.click(createBlog)
 
 

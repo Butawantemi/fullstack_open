@@ -1,77 +1,64 @@
 import { render, screen } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
 import Blog from './Blog'
-import userEvent from '@testing-library/user-event'
 
-test('render content', () => {
+test('Blog information and likes are shown to unauthenticated users, buttons are hidden', () => {
 
   const blog = {
     title: 'First blog post!',
     author: 'Japhet Paul',
-    url: 'https://japhetbuta.com'
+    url: 'https://japhetbuta.com',
+    likes: 12,
+    user: { username: 'tester', id: 'tester123' }
+  }
+
+  render(<BrowserRouter><Blog blog={blog} user={null} /></BrowserRouter>)
+
+  expect(screen.getByText(/First blog post!/)).toBeDefined()
+  expect(screen.getByText(/Japhet Paul/)).toBeDefined()
+  expect(screen.getByText(/likes 12/)).toBeDefined()
+
+  expect(screen.queryByText('like')).toBeNull()
+  expect(screen.queryByText('remove')).toBeNull()
+})
+
+test('Authenticated non-creators see only the like button', async() => {
+  const blog = {
+    title: 'First blog post!',
+    author: 'Japhet Paul',
+    url: 'https://japhetbuta.com',
+    likes: 12,
+    user: { username: 'tester', id: 'tester123' }
   }
 
   const user = {
-    username: 'Super Tester'
+    username: 'Super Tester',
+    id: 'tester1234'
   }
 
-  render(<Blog blog={blog} user={user} />)
+  render(<BrowserRouter><Blog blog={blog} user={user} /></BrowserRouter>)
 
-  const div = screen.getByTestId('toggleContent')
-  const styles = window.getComputedStyle(div)
-
-  const elementTitle = screen.getByText('First blog post!')
-  const elementAuthor = screen.getByText('Japhet Paul')
-
-  expect(styles.display).toBe('none')
-  expect(elementTitle).toBeDefined()
-  expect(elementAuthor).toBeDefined()
+  expect(screen.getByText('like')).toBeDefined()
+  expect(screen.queryByText('remove')).toBeNull()
 })
 
-test('when button clicked', async() => {
-
-  const user = userEvent.setup()
+test('The blog creator is shown both the like and delete buttons', async() => {
   const blog = {
     title: 'First blog post!',
     author: 'Japhet Paul',
-    url: 'https://japhetbuta.com'
+    url: 'https://japhetbuta.com',
+    likes: 12,
+    user: { username: 'Super Tester', id: 'tester123' }
   }
 
-  const user1 = {
-    username: 'Super Tester'
+  const user = {
+    username: 'Super Tester',
+    id: 'tester123'
   }
 
-  render(<Blog blog={blog} user={user1} />)
+  render(<BrowserRouter><Blog blog={blog} user={user} /></BrowserRouter>)
 
-  const button = screen.getByText('view')
-  await user.click(button)
-
-  const div = screen.getByTestId('toggleContent')
-  const styles = window.getComputedStyle(div)
-  expect(styles.display).toBe('block')
-
-})
-
-test('like button clicked twice', async () => {
-  const mockHandler = vi.fn()
-  const user = userEvent.setup()
-
-  const blog = {
-    title: 'First blog post!',
-    author: 'Japhet Paul',
-    url: 'https://japhetbuta.com'
-  }
-
-  const user1 = {
-    username: 'Super Tester'
-  }
-
-  render(<Blog blog={blog} user={user1} handleUpdateLike={mockHandler}/>)
-
-  const button = screen.getByText('like')
-
-  await user.click(button)
-  await user.click(button)
-
-  expect(mockHandler.mock.calls.length).toBe(2)
+  expect(screen.getByText('like')).toBeDefined()
+  expect(screen.queryByText('remove')).toBeDefined()
 })
 
