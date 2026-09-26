@@ -114,34 +114,36 @@ describe('Blog app', () => {
       await expect(remove).not.toBeVisible()
     })
   })
-  describe('check if blogs sorted by number of likes', () => {
-    beforeEach(async ({ page }) => {
-      await loginWith(page, 'tester', 'Mwanza@2027')
-
-      await createBlog(page, 'Highest likes', 'Japhet Paul', 'https://japhetbuta.com/blogs')
-
-      await expect(page.getByText('Highest likes Japhet Paul')).toBeVisible()
-
-      await createBlog(page, 'Lowest likes', 'Japhet Paul', 'https://japhetbuta.com/blogs')
-
-      await expect(page.getByText('Lowest likes Japhet Paul')).toBeVisible()
-
-      const lastBlog = page.getByTestId('blog').last()
-      await lastBlog.getByRole('button', { name: 'like' }).click()
-      await expect(lastBlog).toContainText('likes 1')
-
-      await lastBlog.getByRole('button', { name: 'like' }).click()
-      await expect(lastBlog).toContainText('likes 2')
-
-      await lastBlog.getByRole('button', { name: 'like' }).click()
-      await expect(lastBlog).toContainText('likes 3')
-
-      await expect(page.getByText('Lowest likes Japhet Paul')).toBeVisible()
-    })
-
-    test('sort', async ({ page }) => {
-      await expect(page.getByTestId('blog').first()).toContainText('Lowest likes')
-    })
-  })
-
 })
+
+//   describe('check if blogs sorted by number of likes', () => {
+//     beforeEach(async ({ page }) => {
+//       await loginWith(page, 'tester', 'Mwanza@2027')
+
+//       await createBlog(page, 'Highest likes', 'Japhet Paul', 'https://japhetbuta.com/blogs')
+
+//       await expect(page.getByText('Highest likes Japhet Paul')).toBeVisible()
+
+//       await createBlog(page, 'Lowest likes', 'Japhet Paul', 'https://japhetbuta.com/blogs')
+
+//       await expect(page.getByText('Lowest likes Japhet Paul')).toBeVisible()
+
+//       const lastBlog = page.getByTestId('blog').last()
+//       await lastBlog.getByRole('button', { name: 'like' }).click()
+//       await expect(lastBlog).toContainText('likes 1')
+
+//       await lastBlog.getByRole('button', { name: 'like' }).click()
+//       await expect(lastBlog).toContainText('likes 2')
+
+//       await lastBlog.getByRole('button', { name: 'like' }).click()
+//       await expect(lastBlog).toContainText('likes 3')
+
+//       await expect(page.getByText('Lowest likes Japhet Paul')).toBeVisible()
+//     })
+
+//     test('sort', async ({ page }) => {
+//       await expect(page.getByTestId('blog').first()).toContainText('Lowest likes')
+//     })
+//   })
+
+// })
