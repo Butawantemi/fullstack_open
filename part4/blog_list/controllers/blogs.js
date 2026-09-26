@@ -47,7 +47,7 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
 })
 
 // Update a blog controller
-blogsRouter.put('/:id',userExtractor, async (request, response) => {
+blogsRouter.put('/:id', userExtractor, async (request, response) => {
   const { title, author, url, likes } = request.body
   const user = request.user
 
@@ -57,11 +57,22 @@ blogsRouter.put('/:id',userExtractor, async (request, response) => {
     return response.status(404).json({ error: 'blog not found' })
   }
 
-  if (blog.user.toString() !== user._id.toString()) {
-    return response.status(401).json({ error: 'unauthorized: only the creator can update this blog' })
+  if (title || author || url) {
+    if (blog.user.toString() !== user._id.toString()) {
+      return response.status(401).json({ error: 'unauthorized: only the creator can update this blog' })
+    }
+
+    const updatedFields = { title, author, url, likes }
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, updatedFields, { returnDocument: 'after', runValidators: true })
+
+    if (!updatedBlog) {
+      return response.status(404).json({ error: 'blog not found' })
+
+    }
+    return response.status(200).json(updatedBlog)
   }
 
-  const updatedFields = { title, author, url, likes }
+  const updatedFields = { title: blog.title, author: blog.author, url: blog.url, likes: likes !== undefined ? likes : blog.likes + 1 }
   const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, updatedFields, { returnDocument: 'after', runValidators: true })
 
   if (!updatedBlog) {
