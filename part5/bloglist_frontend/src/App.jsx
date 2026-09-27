@@ -7,6 +7,9 @@ import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import { Box, AppBar, Button, Toolbar, Typography } from '@mui/material'
+
+
 
 const App = () => {
   const [blogs, setBlogs] = useState(null)
@@ -114,6 +117,7 @@ const App = () => {
       try {
         await blogsService.deleteBlog(blog.id)
         setBlogs(blogs.filter((b) => b.id !== blog.id))
+        notify('Successfully delete blog post.', 'success')
       } catch (error) {
         console.error('Failed to delete blog post:', error)
         notify('Failed to delete blog post.', 'error')
@@ -133,15 +137,23 @@ const App = () => {
 
   const blog = (match && blogs) ? blogs.find(b => b.id === match.params.id) : null
 
-  const padding = { padding: 5 }
+  const style = { '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' } }
+
   return (
     <div>
+      <Box sx={{ flexGrow: 1 }}>
+        <AppBar position='static' component='nav'>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              <Link style={{ textDecoration: 'none', color: 'whitesmoke' }} to='/'>Blog App</Link>
+            </Typography>
+            <Button color="inherit" component={Link} to="/" sx={style}>Blogs</Button>
+            {!user && <Button color="inherit" component={Link} to="/login" sx={style}>Login</Button>}
+            {user && <span><Button color="inherit" component={Link} to="/create" sx={style}>new blog</Button><Button color="inherit" onClick={handleLogout} sx={style}>logout</Button></span>}
+          </Toolbar>
+        </AppBar>
+      </Box>
       <Notification message={notificationMessage} type={notificationType} />
-      <div>
-        <Link style={padding} to="/">Blogs</Link>
-        {!user && <Link style={padding} to="/login">Login</Link>}
-        {user && <span><Link style={padding} to="/create">new blog</Link><button style={padding} onClick={handleLogout}>logout</button></span>}
-      </div>
       <Routes>
         <Route path='/' element={<BlogList blogs={blogs} user={user} />} />
         <Route path='/blogs/:id' element={<Blog blog={blog} removeBlog={removeBlog} handleUpdateLike={handleUpdateLike} user={user}/>} />

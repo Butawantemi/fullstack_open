@@ -1,31 +1,31 @@
+import { Button, Card, CardContent, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
+
 
 
 const BlogList = ({ blogs }) => {
 
+  const blogStyle = {
+    marginTop: 5,
+    padding: 5,
+    marginBottom: 5,
+    border: 'none'
+  }
 
-  return (<div>
-    <h2>Blogs</h2>
-    {/* {user && (
-      <div>
+  // <Link to={`/blogs/${blog.id}`}>{blog.url}</Link>
 
-        <Togglable buttonLabel="create new blog">
-          <BlogForm
-            createBlog={createBlog}
-          />
-        </Togglable>
-      </div>
-    )} */}
-    <div>{blogs === null ? (
-      <p>Loading blogs from database...</p>
+  return (<Card sx={blogStyle}>
+    <Typography variant='h4'>Blogs</Typography>
+    <CardContent>{blogs === null ? (
+      <Typography variant='h6'>Loading blogs from database...</Typography>
     ) : (
       [...blogs]
         .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (<li key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.url}</Link></li>
+        .map((blog) => (<Typography key={blog.id}><Link to={`/blogs/${blog.id}`}>{blog.url}</Link></Typography>
         ))
     )}
-    </div>
-  </div> )
+    </CardContent>
+  </Card> )
 }
 
 export default BlogList

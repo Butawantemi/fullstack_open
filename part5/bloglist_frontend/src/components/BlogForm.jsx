@@ -1,4 +1,6 @@
+import { TextField, Button, Box } from '@mui/material'
 import { useState } from 'react'
+
 
 const BlogForm = ({ createBlog }) => {
 
@@ -22,26 +24,32 @@ const BlogForm = ({ createBlog }) => {
   return (
     <div>
       <h2>Create new</h2>
-      <form onSubmit={handleCreateBlog}>
+      <Box
+        component="form"
+        noValidate
+        autoComplete="off"
+        onSubmit={handleCreateBlog}
+        sx={{
+          maxWidth: '500px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+          mt: 2
+        }}
+      >
         <div>
-          <label>
-            title:{' '}
-            <input type="text" value={title} onChange={({ target }) => setTitle(target.value)} data-testid='title'/>
-          </label>
+          <TextField id="outlined-basic" label="Title" variant="outlined" type="text" value={title} onChange={({ target }) => setTitle(target.value)} inputProps={{ 'data-testid': 'title' }}
+            fullWidth/>
         </div>
         <div>
-          <label>
-            author:{' '}
-            <input type="text" value={author} onChange={({ target }) => setAuthor(target.value)} data-testid='author'/>
-          </label>
+          <TextField id="outlined-basic" label="Author" variant="outlined" type="text" value={author} onChange={({ target }) => setAuthor(target.value)} inputProps={{ 'data-testid': 'author' }}
+            fullWidth/>
         </div>
         <div>
-          <label>
-            url: <input type="text" value={url} onChange={({ target }) => setUrl(target.value)} data-testid='url'/>
-          </label>
+          <TextField id="outlined-basic" label="Url" variant="outlined" type="text" value={url} onChange={({ target }) => setUrl(target.value)} inputProps={{ 'data-testid': 'url' }} fullWidth/>
         </div>
-        <button type="submit">create</button>
-      </form>
+        <Button variant="contained" type="submit" sx={{ alignSelf: 'flex-start', mt: 1 }}>create</Button>
+      </Box>
     </div>
   )
 }

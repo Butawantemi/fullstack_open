@@ -1,3 +1,5 @@
+import { TextField, Button, Box, Typography } from '@mui/material'
+
 const LoginForm = ({
   handleSubmit,
   username,
@@ -7,30 +9,36 @@ const LoginForm = ({
 }) => {
   return (
     <div>
-      <h2>Log in to the application</h2>
-      <form onSubmit={handleSubmit}>
+      <Typography variant='h4' sx={{ marginTop: 5 }}>Log in to the application</Typography>
+      <Box
+        component="form"
+        sx={{ '& .MuiTextField-root': { m: 1, width: '25ch' } }}
+        noValidate
+        autoComplete="off" onSubmit={handleSubmit}>
         <div>
-          Username:{' '}
-          <input
+          <TextField
             data-testid="username"
             type="text"
             name="username"
             value={username}
             onChange={handleUsernameChange}
+            id="standard-basic" label="Username" variant="standard"
+            inputProps={{ 'data-testid': 'username' }}
           />
         </div>
         <div>
-          Password:{' '}
-          <input
+          <TextField
             data-testid="password"
             type="password"
             name="password"
             value={password}
             onChange={handlePasswordChange}
+            id="standard-basic" label="Password" variant="standard"
+            inputProps={{ 'data-testid': 'password' }}
           />
         </div>
-        <button type="submit">login</button>
-      </form>
+        <Button variant="contained" style={{ marginTop: 10 }} type="submit">login</Button>
+      </Box>
     </div>
   )
 }

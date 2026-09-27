@@ -1,9 +1,11 @@
+import { Card, CardContent, Typography, Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+
 
 const Blog = ({ blog, handleUpdateLike, removeBlog, user }) => {
   const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
+    marginTop: 5,
+    padding: 5,
     borderWidth: 1,
     marginBottom: 5,
   }
@@ -27,20 +29,21 @@ const Blog = ({ blog, handleUpdateLike, removeBlog, user }) => {
 
 
   return (
-    <div style={blogStyle} data-testid='blog'>
-      <h2>{blog.author} {blog.title}</h2>
-      <a href={blog.url}>{blog.url}</a>{' '}
-      <p>
-          likes {blog.likes}
-        {user && (<button onClick={() => handleUpdateLike(blog)} >like</button>)}
-      </p>
-      <p>Added by <strong>{blog.user.username}</strong></p>
-      {showRemoveButton && (<button
-        onClick={() => handleRemoveBlog(blog)}
-      >
+    <Card sx={blogStyle} data-testid='blog'>
+      <CardContent>
+        <Typography variant='h4'>{blog.title}</Typography>
+        <Typography variant='h6'>by {blog.author}</Typography>
+        <Typography variant='h6' color="inherit"><a href={blog.url}>{blog.url}</a></Typography>
+        <Typography variant='h6'>Added by {blog.user?.username}</Typography>
+        <Typography variant='h6'>{blog.likes} likes
+          {user && (<Button sx={{ margin: 2 }} variant="outlined" onClick={() => handleUpdateLike(blog)} >like</Button>)}
+          {showRemoveButton && (<Button variant="outlined" color="error"
+            onClick={() => handleRemoveBlog(blog)}
+          >
         remove
-      </button>)}
-    </div>
+          </Button>)}</Typography>
+      </CardContent>
+    </Card>
 
   )
 }
